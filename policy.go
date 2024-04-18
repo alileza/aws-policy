@@ -3,7 +3,6 @@ package awspolicy
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/rs/zerolog/log"
@@ -66,7 +65,7 @@ func (policyJSON *Policy) UnmarshalJSON(policy []byte) error {
 func (statementJSON *Statement) Parse(statement map[string]interface{}) {
 
 	// Definitions
-	var principal, notPrincipal, action, notAction, resource, notResource, condition []string
+	var principal, notPrincipal, action, notAction, resource, notResource []string
 	var err error
 
 	/* Iterate over map elements, each key element (statementKey) is the statement element
@@ -180,8 +179,10 @@ func (statementJSON *Statement) Parse(statement map[string]interface{}) {
 			// Condition can be string, []string or map(lot of options)
 			switch statementValue := statementValue.(type) {
 			case string:
-				condition = make([]string, 0)
-				statementJSON.Condition = append(condition, statementValue)
+				if statementJSON.Condition == nil {
+					statementJSON.Condition = make(map[string]any)
+				}
+				statementJSON.Condition[statementKey] = statementValue
 			case []interface{}:
 				err = mapstructure.Decode(statementValue, &statementJSON.Condition)
 				if err != nil {
@@ -189,8 +190,10 @@ func (statementJSON *Statement) Parse(statement map[string]interface{}) {
 				}
 			// If map format as raw text and store it as string
 			case map[string]interface{}:
-				condition = make([]string, 0)
-				statementJSON.Condition = append(condition, fmt.Sprintf("%v", statementValue))
+				if statementJSON.Condition == nil {
+					statementJSON.Condition = make(map[string]any)
+				}
+				statementJSON.Condition = statementValue
 			}
 		}
 	}

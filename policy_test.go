@@ -42,7 +42,7 @@ var validatePolicies = []struct {
 					NotAction:   []string{},
 					Resource:    []string{},
 					NotResource: []string{},
-					Condition:   []string{},
+					Condition:   map[string]any{},
 				}}}, parsed: nil,
 	},
 	{
@@ -108,7 +108,7 @@ var validatePolicies = []struct {
 						"arn:aws:athena:eu-west-5:*:workgroup/AthenaWorkGroup",
 					},
 					NotResource: []string{},
-					Condition:   []string{},
+					Condition:   map[string]any{},
 				}, {
 					Effect: "Allow",
 					Action: []string{
@@ -124,7 +124,7 @@ var validatePolicies = []struct {
 						"glue:GetCatalogImportStatus"},
 					Resource:    []string{"*"},
 					NotResource: []string{},
-					Condition:   []string{},
+					Condition:   map[string]any{},
 				}, {
 					Effect: "Allow",
 					Action: []string{
@@ -141,7 +141,7 @@ var validatePolicies = []struct {
 						"arn:aws:s3:::bucket1/*",
 					},
 					NotResource: []string{},
-					Condition:   []string{},
+					Condition:   map[string]any{},
 				}}}, parsed: nil,
 	}}
 
