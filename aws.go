@@ -52,7 +52,7 @@ func Split(policy *Policy, limit int) []*Policy {
 		Statements: []Statement{},
 	}
 	for _, statement := range policy.Statements {
-		if jsonSize(tmp)+jsonSize(statement) > 6000 {
+		if jsonSize(tmp)+jsonSize(statement) > limit {
 			policies = append(policies, tmp)
 			tmp = &Policy{
 				Version:    policy.Version,
