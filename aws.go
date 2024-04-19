@@ -41,28 +41,34 @@ func GetAWSPolicy(ctx context.Context, svc *iam.IAM, policyArn string) (*Policy,
 }
 
 // Split splits a policy into multiple policies with a size limit.
-func Split(policy *Policy, limit int) []*Policy {
+func Split(policy *awspolicy.Policy, limit int) []*awspolicy.Policy {
 	if jsonSize(policy) < limit {
-		return []*Policy{policy}
+		return []*awspolicy.Policy{policy}
 	}
 
-	var policies []*Policy
-	tmp := &Policy{
+	var policies []*awspolicy.Policy
+	tmp := &awspolicy.Policy{
 		Version:    policy.Version,
-		Statements: []Statement{},
+		Statements: []awspolicy.Statement{},
 	}
 	for _, statement := range policy.Statements {
 		if jsonSize(tmp)+jsonSize(statement) > limit {
-			policies = append(policies, tmp)
-			tmp = &Policy{
+			if len(tmp.Statements) > 0 { // Ensure tmp is not empty before appending
+				policies = append(policies, tmp)
+			}
+			tmp = &awspolicy.Policy{
 				Version:    policy.Version,
-				Statements: []Statement{},
+				Statements: []awspolicy.Statement{},
 			}
 		}
 		tmp.Statements = append(tmp.Statements, statement)
 	}
+	if len(tmp.Statements) > 0 { // Append the last batch of statements if not empty
+		policies = append(policies, tmp)
+	}
 	return policies
 }
+
 
 // Merge merges multiple policies into a single policy.
 func Merge(name string, version string, policies []*Policy) *Policy {
